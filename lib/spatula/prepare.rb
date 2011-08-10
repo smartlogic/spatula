@@ -2,8 +2,8 @@
 module Spatula
   class Prepare < SshCommand
 
-    RUBYGEMS_VERSION = "1.6.2"
     DEFAULT_RUBY_VERSION = "1.9.2-p180"
+    DEFAULT_RUBYGEMS_VERSION = "1.6.2"
 
     def run
 
@@ -62,6 +62,10 @@ module Spatula
       @ruby_version || DEFAULT_RUBY_VERSION
     end
 
+    def rubygems_version
+      @rubygems_version || DEFAULT_RUBYGEMS_VERSION
+    end
+
     def ruby_path
       rev = ruby_version.match(/^(\d+\.\d+)/)[1]
       "#{rev}/ruby-#{ruby_version}.tar.gz"
@@ -73,7 +77,7 @@ module Spatula
     end
 
     def install_rubygems
-      ssh "curl -L 'http://production.cf.rubygems.org/rubygems/rubygems-#{RUBYGEMS_VERSION}.tgz' | tar xvzf -"
+      ssh "curl -L 'http://production.cf.rubygems.org/rubygems/rubygems-#{rubygems_version}.tgz' | tar xvzf -"
       ssh "cd rubygems* && #{sudo} ruby setup.rb --no-ri --no-rdoc"
       ssh "#{sudo} ln -sfv /usr/bin/gem1.8 /usr/bin/gem"
     end

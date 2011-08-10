@@ -4,7 +4,7 @@ module Spatula
       new(*args).run
     end
 
-    def initialize(server, port=nil, login=nil, identity=nil, upload_key=nil, key_file=nil, ruby_version=nil)
+    def initialize(server, port=nil, login=nil, identity=nil, upload_key=nil, key_file=nil, ruby_version=nil, rubygems_version=nil)
       @server = server
       @port   = port
       @port_switch = port ? " -p #{port}" : '' 
@@ -13,6 +13,7 @@ module Spatula
       @upload_key = upload_key
       @key_file = key_file
       @ruby_version = ruby_version
+      @rubygems_version = rubygems_version
     end
 
     def ssh(command)
