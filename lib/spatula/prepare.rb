@@ -82,7 +82,7 @@ module Spatula
       ssh "cd ~"
       ssh "curl -L 'http://production.cf.rubygems.org/rubygems/rubygems-#{rubygems_version}.tgz' | tar xvzf -"
       ssh "cd rubygems* && #{sudo} ruby setup.rb --no-ri --no-rdoc"
-      ssh "#{sudo} ln -sfv /usr/bin/gem1.8 /usr/bin/gem"
+      #ssh "#{sudo} ln -sfv /usr/bin/gem1.8 /usr/bin/gem"
     end
 
     def install_chef
