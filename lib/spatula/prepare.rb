@@ -43,6 +43,7 @@ module Spatula
     def run_for_debian
       ssh "#{sudo} apt-get update"
       ssh "#{sudo} apt-get install -y build-essential zlib1g-dev libssl-dev libreadline5-dev curl rsync"
+      install_ruby
       install_rubygems
       install_chef
     end
