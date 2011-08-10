@@ -72,11 +72,13 @@ module Spatula
     end
 
     def install_ruby
+      ssh "cd ~"
       ssh "curl -L 'ftp://ftp.ruby-lang.org/pub/ruby/#{ruby_path}' | tar xvzf -"
       ssh "cd ruby-#{ruby_version} && ./configure && make && #{sudo} make install"
     end
 
     def install_rubygems
+      ssh "cd ~"
       ssh "curl -L 'http://production.cf.rubygems.org/rubygems/rubygems-#{rubygems_version}.tgz' | tar xvzf -"
       ssh "cd rubygems* && #{sudo} ruby setup.rb --no-ri --no-rdoc"
       ssh "#{sudo} ln -sfv /usr/bin/gem1.8 /usr/bin/gem"
