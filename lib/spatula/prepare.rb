@@ -79,7 +79,7 @@ module Spatula
     end
 
     def install_rubygems
-      return if ruby_version =~ /1\.9\.[0-9]/
+      return if ruby_version =~ /1\.9\.[0-9]/ && @rubygems_version.nil? # no need for rubygems install on 1.9.2, unless a specific version was requested at the command line
       ssh "cd ~"
       ssh "curl -L 'http://production.cf.rubygems.org/rubygems/rubygems-#{rubygems_version}.tgz' | tar xvzf -"
       ssh "cd rubygems* && #{sudo} ruby setup.rb --no-ri --no-rdoc"
