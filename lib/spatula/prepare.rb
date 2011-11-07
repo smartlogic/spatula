@@ -35,7 +35,8 @@ module Spatula
 
     def run_for_ubuntu
       ssh "#{sudo} apt-get update"
-      ssh "#{sudo} apt-get install -y ruby irb ri libopenssl-ruby1.8 libshadow-ruby1.8 ruby1.8-dev build-essential rsync curl"
+      ssh "#{sudo} apt-get install -y build-essential zlib1g-dev libssl-dev libreadline5-dev curl rsync"
+      install_ruby
       install_rubygems
       install_chef
     end
