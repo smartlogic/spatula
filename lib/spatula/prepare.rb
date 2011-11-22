@@ -22,10 +22,6 @@ module Spatula
         "ubuntu"
       when /debian/i
         "debian"
-      when /fedora/i
-        "fedora"
-      when /CentOS/i
-        "centos"
       when ""
         raise "Couldn't get system info from /etc/issue. Please check your SSH credentials."
       else
@@ -35,7 +31,9 @@ module Spatula
 
     def run_for_ubuntu
       ssh "#{sudo} apt-get update"
-      ssh "#{sudo} apt-get install -y build-essential zlib1g-dev libssl-dev libreadline5-dev curl rsync"
+      ssh "#{sudo} apt-get install -y build-essential zlib1g-dev libssl-dev libreadline5-dev curl rsync git-core"
+      install_rvm
+      install_openssl
       install_ruby
       install_rubygems
       install_chef
@@ -43,20 +41,11 @@ module Spatula
 
     def run_for_debian
       ssh "#{sudo} apt-get update"
-      ssh "#{sudo} apt-get install -y build-essential zlib1g-dev libssl-dev libreadline5-dev curl rsync"
+      ssh "#{sudo} apt-get install -y build-essential zlib1g-dev libssl-dev libreadline5-dev curl rsync git-core"
+      install_rvm
+      install_openssl
       install_ruby
       install_rubygems
-      install_chef
-    end
-
-    def run_for_fedora
-      sudo = ssh('which sudo > /dev/null 2>&1') ? 'sudo' : ''
-      ssh "#{sudo} yum install -y make gcc gcc-c++ rsync sudo openssl-devel rubygems ruby-devel ruby-shadow curl"
-    end
-
-    def run_for_centos
-      ssh "#{sudo} yum install -y make gcc gcc-c++ rsync sudo openssl-devel curl"
-      install_ruby
       install_chef
     end
 
@@ -68,31 +57,37 @@ module Spatula
       @rubygems_version || DEFAULT_RUBYGEMS_VERSION
     end
 
-    def ruby_path
-      rev = ruby_version.match(/^(\d+\.\d+)/)[1]
-      "#{rev}/ruby-#{ruby_version}.tar.gz"
+    def install_rvm
+      ssh "#{sudo} bash < <(curl -s https://raw.github.com/wayneeseguin/rvm/master/binscripts/rvm-installer )"
+      ssh "whoami | xargs #{sudo} usermod -a -G rvm"
+    end
+
+    def install_openssl
+      ssh "wget http://www.openssl.org/source/openssl-0.9.8g.tar.gz"
+      ssh "tar xzf openssl-0.9.8g.tar.gz"
+      ssh "cd openssl-0.9.8g && ./config --prefix=/usr/local --openssldir=/usr/local/openssl shared && make && make test && #{sudo} make install"
     end
 
     def install_ruby
-      ssh "cd ~"
-      ssh "curl -L 'ftp://ftp.ruby-lang.org/pub/ruby/#{ruby_path}' | tar xvzf -"
-      ssh "cd ruby-#{ruby_version} && ./configure && make && #{sudo} make install"
+      ssh "#{rvm} install #{ruby_version} --with-openssl-dir=/usr/local"
+      ssh "#{rvm} use --default #{ruby_version}"
     end
 
     def install_rubygems
       return if ruby_version =~ /1\.9\.[0-9]/ && @rubygems_version.nil? # no need for rubygems install on 1.9.2, unless a specific version was requested at the command line
-      ssh "cd ~"
-      ssh "curl -L 'http://production.cf.rubygems.org/rubygems/rubygems-#{rubygems_version}.tgz' | tar xvzf -"
-      ssh "cd rubygems* && #{sudo} ruby setup.rb --no-ri --no-rdoc"
-      #ssh "#{sudo} ln -sfv /usr/bin/gem1.8 /usr/bin/gem"
+      ssh "#{rvm} rubygems #{rubygems_version}"
     end
 
     def install_chef
-      ssh "#{sudo} gem install rdoc chef ohai --no-ri --no-rdoc --source http://gems.opscode.com --source http://gems.rubyforge.org"
+      ssh "#{rvm} gem install rdoc chef ohai --no-ri --no-rdoc --source http://gems.opscode.com --source http://gems.rubyforge.org"
     end
 
     def sudo
       ssh('which sudo > /dev/null 2>&1') ? 'sudo' : ''
+    end
+
+    def rvm
+      'source /usr/local/rvm/scripts/rvm && rvm'
     end
 
     def upload_ssh_key
