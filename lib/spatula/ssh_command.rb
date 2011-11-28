@@ -7,7 +7,7 @@ module Spatula
     def initialize(server, port=nil, login=nil, identity=nil, upload_key=nil, key_file=nil, ruby_version=nil, rubygems_version=nil)
       @server = server
       @port   = port
-      @port_switch = port ? " -p #{port}" : '' 
+      @port_switch = port ? " -p #{port}" : ''
       @login_switch = login ? "-l #{login}" : ''
       @identity_switch = identity ? %Q|-i "#{identity}"| : ''
       @upload_key = upload_key
@@ -21,7 +21,7 @@ module Spatula
     end
 
     def ssh_command(command)
-      %Q|ssh -t#{ssh_opts} #@server "#{command.gsub('"', '\\"')}"|
+      %Q|ssh -t#{ssh_opts} #@server 'bash --login -c "#{command.gsub('"', '\\"')}"'|
     end
 
     def ssh_opts
