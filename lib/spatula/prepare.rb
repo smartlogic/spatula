@@ -79,7 +79,12 @@ module Spatula
     end
 
     def install_chef
-      ssh "#{rvm} gem install rdoc chef ohai --no-ri --no-rdoc --source http://gems.opscode.com --source http://gems.rubyforge.org"
+      if ruby_version =~ /1\.8\.6/
+        ssh "#{rvm} gem install rdoc ohai --no-ri --no-rdoc --source http://gems.opscode.com --source http://gems.rubyforge.org"
+        ssh "#{rvm} gem install chef --version '= 0.10.2' --no-ri --no-rdoc --source http://gems.opscode.com --source http://gems.rubyforge.org"
+      else
+        ssh "#{rvm} gem install rdoc chef ohai --no-ri --no-rdoc --source http://gems.opscode.com --source http://gems.rubyforge.org"
+      end
     end
 
     def sudo
