@@ -29,13 +29,13 @@ module Spatula
         sh chef_cmd
       else
         sh "rsync -rlP --rsh=\"ssh #{ssh_opts}\" --delete --exclude '.*' ./ #@server:#{REMOTE_CHEF_PATH}"
-        ssh "cd #{REMOTE_CHEF_PATH}; #{chef_cmd}"
+        ssh "cd #{REMOTE_CHEF_PATH} && #{chef_cmd}"
       end
     end
 
     private
       def chef_cmd
-        "sudo -H -E chef-solo -c config/solo.rb -j config/#@node.json -l #{ @log_level || 'info'}"
+        "rvmsudo -H -E chef-solo -c config/solo.rb -j config/#@node.json -l #{ @log_level || 'info'}"
       end
   end
 end
