@@ -92,7 +92,7 @@ module Spatula
     end
 
     def rvm
-      'source /usr/local/rvm/scripts/rvm && rvm'
+      'rvm'
     end
 
     def upload_ssh_key
