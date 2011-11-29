@@ -65,11 +65,11 @@ module Spatula
     def install_openssl
       ssh "wget http://www.openssl.org/source/openssl-0.9.8g.tar.gz"
       ssh "tar xzf openssl-0.9.8g.tar.gz"
-      ssh "cd openssl-0.9.8g && ./config --prefix=/usr/local --openssldir=/usr/local/openssl shared && make && #{sudo} make install"
+      ssh "cd openssl-0.9.8g && ./config --prefix=/opt/local --openssldir=/opt/local/openssl shared && make && #{sudo} make install"
     end
 
     def install_ruby
-      ssh "#{rvm} install #{ruby_version} --with-openssl-dir=/usr/local"
+      ssh "#{rvm} install #{ruby_version} --with-openssl-dir=/opt/local"
       ssh "#{rvm} use --default #{ruby_version}"
     end
 
