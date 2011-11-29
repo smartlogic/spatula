@@ -63,12 +63,9 @@ module Spatula
     end
 
     def install_openssl
-      openssl_version = ssh("openssl version")
-      unless openssl_version =~ /0\.9\.8g/
-        ssh "wget http://www.openssl.org/source/openssl-0.9.8g.tar.gz"
-        ssh "tar xzf openssl-0.9.8g.tar.gz"
-        ssh "cd openssl-0.9.8g && ./config --prefix=/usr/local --openssldir=/usr/local/openssl shared && make && make test && #{sudo} make install"
-      end
+      ssh "wget http://www.openssl.org/source/openssl-0.9.8g.tar.gz"
+      ssh "tar xzf openssl-0.9.8g.tar.gz"
+      ssh "cd openssl-0.9.8g && ./config --prefix=/usr/local --openssldir=/usr/local/openssl shared && make && make test && #{sudo} make install"
     end
 
     def install_ruby
@@ -83,10 +80,10 @@ module Spatula
 
     def install_chef
       if ruby_version =~ /1\.8\.6/
-        ssh "#{rvm} gem install rdoc ohai --no-ri --no-rdoc --source http://gems.opscode.com --source http://gems.rubyforge.org"
+        ssh "#{rvm} gem install ohai --no-ri --no-rdoc --source http://gems.opscode.com --source http://gems.rubyforge.org"
         ssh "#{rvm} gem install chef --version '0.10.2' --no-ri --no-rdoc --source http://gems.opscode.com --source http://gems.rubyforge.org"
       else
-        ssh "#{rvm} gem install rdoc chef ohai --no-ri --no-rdoc --source http://gems.opscode.com --source http://gems.rubyforge.org"
+        ssh "#{rvm} gem install chef ohai --no-ri --no-rdoc --source http://gems.opscode.com --source http://gems.rubyforge.org"
       end
     end
 
