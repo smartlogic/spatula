@@ -57,6 +57,10 @@ module Spatula
       @rubygems_version || DEFAULT_RUBYGEMS_VERSION
     end
 
+    def ruby186?
+      ruby_version =~ /1\.8\.6/
+    end
+
     def install_rvm
       ssh "#{sudo} bash < <(curl -s https://raw.github.com/wayneeseguin/rvm/master/binscripts/rvm-installer )"
       ssh "whoami | xargs #{sudo} usermod -a -G rvm"
@@ -64,45 +68,47 @@ module Spatula
     end
 
     def install_openssl
+      return unless ruby186?
       ssh "wget http://www.openssl.org/source/openssl-0.9.8g.tar.gz"
       ssh "tar xzf openssl-0.9.8g.tar.gz"
       ssh "cd openssl-0.9.8g && ./config --prefix=/opt/local --openssldir=/opt/local/openssl shared && make && #{sudo} make install"
     end
 
     def install_ruby
-      ssh "#{rvm} install #{ruby_version} --with-openssl-dir=/opt/local"
-      ssh "#{rvm} use --default #{ruby_version}"
+      if ruby186?
+        ssh "rvm install #{ruby_version} --with-openssl-dir=/opt/local"
+      else
+        ssh "rvm install #{ruby_version}"
+      end
+      ssh "rvm use --default #{ruby_version}"
     end
 
     def install_rubygems
       return if ruby_version =~ /1\.9\.[0-9]/ && @rubygems_version.nil? # no need for rubygems install on 1.9.2, unless a specific version was requested at the command line
-      ssh "#{rvm} rubygems #{rubygems_version}"
+      ssh "rvm rubygems #{rubygems_version}"
     end
 
     def install_chef
       # this combination supports ruby 1.8.6
-
-      install_gem("rdoc", "2.5")
+      version = ruby186? ? "2.5" : nil
+      install_gem("rdoc", version)
 
       install_gem("ohai")
-
-      install_gem("bunny", "0.7.6")
-      install_gem("highline", "1.6.2")
-      install_gem("polyglot", "0.3.2")
+      if ruby186?
+        install_gem("bunny", "0.7.6")
+        install_gem("highline", "1.6.2")
+        install_gem("polyglot", "0.3.2")
+      end
       install_gem("chef")
     end
 
     def install_gem(gem, version = nil)
       version = "-v #{version}" if version
-      ssh "#{rvm} all do gem install #{gem} #{version} --no-ri --no-rdoc --source http://gems.opscode.com --source http://gems.rubyforge.org"
+      ssh "rvm all do gem install #{gem} #{version} --no-ri --no-rdoc --source http://gems.opscode.com --source http://gems.rubyforge.org"
     end
 
     def sudo
       ssh('which sudo > /dev/null 2>&1') ? 'sudo' : ''
-    end
-
-    def rvm
-      'rvm'
     end
 
     def upload_ssh_key
