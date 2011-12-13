@@ -104,7 +104,7 @@ module Spatula
 
     def install_gem(gem, version = nil)
       version = "-v #{version}" if version
-      ssh "rvm all do gem install #{gem} #{version} --no-ri --no-rdoc --source http://gems.opscode.com --source http://gems.rubyforge.org"
+      ssh "rvm all do gem install #{gem} #{version} --no-ri --no-rdoc --source http://gems.rubyforge.org"
     end
 
     def sudo
