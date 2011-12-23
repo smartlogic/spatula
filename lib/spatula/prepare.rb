@@ -62,7 +62,7 @@ module Spatula
     end
 
     def install_rvm
-      ssh "#{sudo} bash --profile < <(curl -s https://raw.github.com/wayneeseguin/rvm/master/binscripts/rvm-installer )"
+      ssh "#{sudo} bash < <(curl -s https://raw.github.com/wayneeseguin/rvm/master/binscripts/rvm-installer )"
       ssh "whoami | xargs #{sudo} usermod -a -G rvm"
       ssh "#{sudo} usermod -a -G rvm root"
     end

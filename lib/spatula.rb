@@ -52,8 +52,9 @@ module Spatula
     method_options :keyfile => :string
     method_options :ruby_version => :string
     method_options :rubygems_version => :string
+    method_options :http_proxy => :string
     def prepare(server)
-      Prepare.run(server, options[:port], options[:login], options[:identity], options[:upload_key], options[:keyfile], options[:ruby_version], options[:rubygems_version])
+      Prepare.run(server, options[:port], options[:login], options[:identity], options[:upload_key], options[:keyfile], options[:ruby_version], options[:rubygems_version], options[:http_proxy])
     end
 
     private
